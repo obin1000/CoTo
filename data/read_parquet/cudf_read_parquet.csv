@@ -1,0 +1,12 @@
+file type,read time (ms)
+parquet brotli,433
+parquet gzip,231
+parquet lz4,unsupported
+parquet none,208
+parquet snappy,206
+parquet zstd,181
+orc lz4,
+orc uncompressed,
+orc snappy,
+orc zlib,
+orc zstd,

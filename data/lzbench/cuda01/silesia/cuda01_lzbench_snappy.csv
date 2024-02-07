@@ -1,0 +1,20 @@
+Compressor name,Chunk size,Compression speed,Decompression speed,Original size,Compressed size,Ratio,Filename
+memcpy,,6709.49,6796.05,211948032,211948032,100.00,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-1,2828.03,3727.06,211948032,204595282,96.53,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-2,3141.96,4130.33,211948032,173375504,81.80,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-3,3158.04,4443.63,211948032,153226004,72.29,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-4,3278.11,4757.41,211948032,139260868,65.71,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-5,3211.32,5099.31,211948032,129034996,60.88,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-6,3065.12,5097.54,211948032,121772132,57.45,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-7,2993.26,5384.34,211948032,116208900,54.83,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-8,2816.91,5311.92,211948032,111812676,52.75,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-9,2668.80,5202.01,211948032,108499868,51.19,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-10,2423.81,5198.24,211948032,106763332,50.37,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-11,2296.31,4919.85,211948032,105941124,49.98,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-12,2138.28,4562.99,211948032,105524242,49.79,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-13,1700.16,3494.82,211948032,105318586,49.69,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-14,1063.67,2451.59,211948032,105210594,49.64,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-15,541.31,1498.06,211948032,105164314,49.62,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-16,316.69,861.88,211948032,105131307,49.60,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-17,164.87,442.52,211948032,105120763,49.60,../datasets/silesia.tar
+nvcomp_snappy 3.0.5,-18,101.07,275.08,211948032,105112583,49.59,../datasets/silesia.tar

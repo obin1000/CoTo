@@ -1,0 +1,6 @@
+Compressor name,Chunk size,Compression speed,Decompression speed,Original size,Compressed size,Ratio,Filename
+memcpy,,5244.04,5240.43,211948032,211948032,100.00,../datasets/silesia.tar
+nvcomp_gdeflate_throughput 3.0.5,-7,1575.90,5998.96,211948032,98614508,46.53,../datasets/silesia.tar
+nvcomp_gdeflate_throughput 3.0.5,-8,1559.27,5761.71,211948032,93381396,44.06,../datasets/silesia.tar
+nvcomp_gdeflate_throughput 3.0.5,-9,1489.42,5824.37,211948032,90757588,42.82,../datasets/silesia.tar
+nvcomp_gdeflate_throughput 3.0.5,-10,1390.50,5664.95,211948032,89485532,42.22,../datasets/silesia.tar

@@ -1,0 +1,17 @@
+Compressor name,Chunk size,Compression speed,Decompression speed,Original size,Compressed size,Ratio,Filename
+memcpy,,6214.62,6136.82,211948032,211948032,100.00,../datasets/silesia.tar
+nvcomp_bitcomp_sparse 3.0.5,-4,3655.49,3801.15,211948032,208491220,98.37,../datasets/silesia.tar
+nvcomp_bitcomp_sparse 3.0.5,-5,3880.83,4040.99,211948032,198887084,93.84,../datasets/silesia.tar
+nvcomp_bitcomp_sparse 3.0.5,-6,4154.04,4429.89,211948032,195601764,92.29,../datasets/silesia.tar
+nvcomp_bitcomp_sparse 3.0.5,-7,4279.58,4593.39,211948032,189004364,89.17,../datasets/silesia.tar
+nvcomp_bitcomp_sparse 3.0.5,-8,4264.74,4583.96,211948032,188365756,88.87,../datasets/silesia.tar
+nvcomp_bitcomp_sparse 3.0.5,-9,4251.49,4516.10,211948032,188046116,88.72,../datasets/silesia.tar
+nvcomp_bitcomp_sparse 3.0.5,-10,4243.86,4538.34,211948032,187886292,88.65,../datasets/silesia.tar
+nvcomp_bitcomp_sparse 3.0.5,-11,4277.95,4556.64,211948032,187806156,88.61,../datasets/silesia.tar
+nvcomp_bitcomp_sparse 3.0.5,-12,4280.41,4550.51,211948032,187766268,88.59,../datasets/silesia.tar
+nvcomp_bitcomp_sparse 3.0.5,-13,4232.68,4495.91,211948032,187746220,88.58,../datasets/silesia.tar
+nvcomp_bitcomp_sparse 3.0.5,-14,4264.75,4509.98,211948032,187736204,88.58,../datasets/silesia.tar
+nvcomp_bitcomp_sparse 3.0.5,-15,4279.94,4794.86,211948032,187731180,88.57,../datasets/silesia.tar
+nvcomp_bitcomp_sparse 3.0.5,-16,4040.75,4404.35,211948032,187728644,88.57,../datasets/silesia.tar
+nvcomp_bitcomp_sparse 3.0.5,-17,4231.20,4402.56,211948032,187727380,88.57,../datasets/silesia.tar
+nvcomp_bitcomp_sparse 3.0.5,-18,3780.27,3863.72,211948032,187726732,88.57,../datasets/silesia.tar
