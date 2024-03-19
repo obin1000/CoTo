@@ -1,0 +1,26 @@
+results
+Standard;File;Threads;Chunks;decompression;compression;ratio
+snappy;8gb_dickens;524288;16384;34.1733;7.7352;1.4246
+snappy;8gb_dickens;2097152;4096;31.4656;10.2246;1.3380
+snappy;8gb_dickens;8388608;1024;36.7887;15.9173;1.1941
+zstd;8gb_dickens;524288;16384;19.7106;4.8303;2.2170
+zstd;8gb_dickens;2097152;4096;19.3083;4.3543;2.0183
+zstd;8gb_dickens;8388608;1024;terminate called without an active exception548;;
+snappy;8gb_mozilla;524288;16384;54.8382;13.5674;1.8408
+snappy;8gb_mozilla;2097152;4096;48.7388;15.2196;1.7495
+snappy;8gb_mozilla;8388608;1024;45.5461;18.3510;1.5953
+zstd;8gb_mozilla;524288;16384;29.3294;7.2185;2.4913
+zstd;8gb_mozilla;2097152;4096;17.4520;5.5288;2.2788
+zstd;8gb_mozilla;8388608;1024;terminate called without an active exception548;;
+snappy;8gb_mr;524288;16384;63.1593;10.4858;1.7427
+snappy;8gb_mr;2097152;4096;58.4946;13.4510;1.6843
+snappy;8gb_mr;8388608;1024;54.8928;20.4499;1.5523
+zstd;8gb_mr;524288;16384;26.3879;7.7449;2.6083
+zstd;8gb_mr;2097152;4096;16.2122;6.0214;2.4438
+zstd;8gb_mr;8388608;1024;terminate called without an active exception548;;
+snappy;8gb_nci;524288;16384;95.8144;21.7026;4.5845
+snappy;8gb_nci;2097152;4096;64.1597;22.3579;3.7268
+snappy;8gb_nci;8388608;1024;51.3389;24.4248;3.2376
+zstd;8gb_nci;524288;16384;42.7430;16.6556;8.4983
+zstd;8gb_nci;2097152;4096;19.5566;10.8915;6.3273
+zstd;8gb_nci;8388608;1024;terminate called without an active exception548;;
