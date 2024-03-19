@@ -1,0 +1,8 @@
+Interconnect,Throughput (GB/s),Year
+PCIe 1,8,2003
+PCIe 2,16,2007
+PCIe 3,32,2010
+PCIe 4,64,2017
+PCIe 5,128,2019
+PCIe 6,256,2022
+PCIe 7,512,2025

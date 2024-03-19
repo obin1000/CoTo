@@ -1,7 +1,7 @@
 """
 Store data as (offset, length) tuples
 """
-input_string = "letletlet"
+input_string = "testtesttestestesttest"
 
 window_size = 5
 

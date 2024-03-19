@@ -1,12 +1,12 @@
-file type,read time (ms)
-parquet brotli,433
-parquet gzip,231
-parquet lz4,unsupported
-parquet none,208
-parquet snappy,206
-parquet zstd,181
-orc lz4,
-orc uncompressed,
-orc snappy,
-orc zlib,
-orc zstd,
+TPC-H Customer,File size (MB),0,1,2,3,4,5,6,7
+parquet brotli,73.2,x,x,x,x,x,x,x,x
+parquet gzip,78.4,262,266,264,267,274,267,264,268
+parquet LZ4,127,x,x,x,x,x,x,x,x
+parquet none,229,205,210,207,211,210,213,202,198
+parquet snappy,120.8,199,195,196,197,199,200,198,212
+parquet zstd,84.4,178,177,173,183,187,206,181,177
+orc lz4,209.6,1622,161,160,167,198,183,182,218
+orc uncompressed,209.5,186,174,178,178,172,183,188,157
+orc snappy,105.8,122,107,108,109,108,105,102,104
+orc zlib,77.2,126,124,123,125,123,123,123,128
+orc zstd,72.1,137,135,128,125,132,137,134,121
