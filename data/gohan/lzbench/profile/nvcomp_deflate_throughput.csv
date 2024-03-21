@@ -1,0 +1,6 @@
+Compressor name,Compression speed,Decompression speed,Original size,Compressed size,Ratio,Filename
+memcpy ,13937.54,14107.23,211957760,211957760,100.00,/home/robin/dataset/silesia.tar
+nvcomp_deflate_throughput 3.0.5 -7,3653.35,4815.65,211957760,93679167,44.20,/home/robin/dataset/silesia.tar
+nvcomp_deflate_throughput 3.0.5 -8,3583.88,4891.70,211957760,90882225,42.88,/home/robin/dataset/silesia.tar
+nvcomp_deflate_throughput 3.0.5 -9,3366.50,4823.08,211957760,89476769,42.21,/home/robin/dataset/silesia.tar
+nvcomp_deflate_throughput 3.0.5 -10,2981.27,4546.58,211957760,88817145,41.90,/home/robin/dataset/silesia.tar

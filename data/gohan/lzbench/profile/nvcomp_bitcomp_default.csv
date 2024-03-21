@@ -1,0 +1,17 @@
+Compressor name,Compression speed,Decompression speed,Original size,Compressed size,Ratio,Filename
+memcpy ,13785.67,13809.18,211957760,211957760,100.00,/home/robin/dataset/silesia.tar
+nvcomp_bitcomp_default 3.0.5 -4,4622.97,4634.98,211957760,192793500,90.96,/home/robin/dataset/silesia.tar
+nvcomp_bitcomp_default 3.0.5 -5,5046.22,4961.48,211957760,183762628,86.70,/home/robin/dataset/silesia.tar
+nvcomp_bitcomp_default 3.0.5 -6,5233.58,5103.10,211957760,179245196,84.57,/home/robin/dataset/silesia.tar
+nvcomp_bitcomp_default 3.0.5 -7,5348.06,5202.48,211957760,176386596,83.22,/home/robin/dataset/silesia.tar
+nvcomp_bitcomp_default 3.0.5 -8,5366.43,5210.36,211957760,175744804,82.92,/home/robin/dataset/silesia.tar
+nvcomp_bitcomp_default 3.0.5 -9,5359.64,5209.09,211957760,175423540,82.76,/home/robin/dataset/silesia.tar
+nvcomp_bitcomp_default 3.0.5 -10,5367.01,5211.46,211957760,175262844,82.69,/home/robin/dataset/silesia.tar
+nvcomp_bitcomp_default 3.0.5 -11,5366.61,5207.44,211957760,175182204,82.65,/home/robin/dataset/silesia.tar
+nvcomp_bitcomp_default 3.0.5 -12,5357.21,5190.62,211957760,175141896,82.63,/home/robin/dataset/silesia.tar
+nvcomp_bitcomp_default 3.0.5 -13,5328.03,5146.02,211957760,175121792,82.62,/home/robin/dataset/silesia.tar
+nvcomp_bitcomp_default 3.0.5 -14,5282.76,5013.26,211957760,175111736,82.62,/home/robin/dataset/silesia.tar
+nvcomp_bitcomp_default 3.0.5 -15,5164.79,4777.32,211957760,175106624,82.61,/home/robin/dataset/silesia.tar
+nvcomp_bitcomp_default 3.0.5 -16,4903.84,4346.28,211957760,175104088,82.61,/home/robin/dataset/silesia.tar
+nvcomp_bitcomp_default 3.0.5 -17,4478.44,3767.17,211957760,175102872,82.61,/home/robin/dataset/silesia.tar
+nvcomp_bitcomp_default 3.0.5 -18,3810.91,3045.59,211957760,175102200,82.61,/home/robin/dataset/silesia.tar
