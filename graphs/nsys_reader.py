@@ -6,7 +6,7 @@ import nsys_constants as nsys
 from tqdm import tqdm
 tqdm.pandas()
 
-TIME_SPLITTER_NS = 5_000_000
+TIME_SPLITTER_NS = 100_000
 FILE_SIZE = 8589934592
 
 COMPRESSION_KERNELS = ['snap_kernel', 'lz_compression_kernel', 'lz4CompressBatchKernel', 'compress_kernel', 'batch_encoder_kernel', 'cascaded_compression_kernel', 'lz_compress_longest_matches', 'lz_compress_greedy_hash', 'huffman_encode', 'gdeflate_encode']
@@ -26,6 +26,7 @@ class NsysReader:
         self.add_extra_info()
         
     def add_extra_info(self) -> None:
+        """ Calculates the average utilization of each kernel """
         self.kernel_event_df['utilization'] = self.kernel_event_df.apply(lambda row: self.get_avg_utilization_of_span(row['start'], row['end']), axis=1)
         self.kernel_event_df['name'] = self.kernel_event_df['shortName'].apply(self.get_string)
 
@@ -36,14 +37,20 @@ class NsysReader:
         """ Translate a string id to a string """
         return str(self.strings_df.loc[self.strings_df['id'] == id, 'value'].values[0], encoding='utf-8')
 
-    def get_utilization_metrics_of_span(self, begin, end) -> pd.DataFrame:
+    def get_utilization_metrics_in_span(self, begin, end) -> pd.DataFrame:
         """ Gives a dataframe with GPU utilisation metrics between give timestamps (ns) """
         compute_metrics = self.gpu_metric_df.loc[self.gpu_metric_df['metricId'] == nsys.METRIC_COMPUTE_WARPS]
         return compute_metrics[compute_metrics['timestamp'].between(begin, end, inclusive="both")]
+    
+    def get_unallocated_metrics_in_span(self, begin, end) -> pd.DataFrame:
+        """ Gives a dataframe with unallocated warps metrics between give timestamps (ns) """
+        compute_metrics = self.gpu_metric_df.loc[self.gpu_metric_df['metricId'] == nsys.METRIC_UNALLOCATED_WARPS]
+        return compute_metrics[compute_metrics['timestamp'].between(begin, end, inclusive="both")]
+
 
     def get_avg_utilization_of_span(self, begin, end) -> float:
         """ Gives the average GPU utilisation between give timestamps (ns) """
-        utilizations = self.get_utilization_metrics_of_span(begin, end)
+        utilizations = self.get_utilization_metrics_in_span(begin, end)
         if len(utilizations) < 1:
             # print('Waning: No utilization data found in provided range')
             return -1
@@ -78,7 +85,7 @@ class NsysReader:
             return CATEGORY_OTHER
         
     def get_group_data(self) -> pd.DataFrame:
-        # Calculate time between two kernel events
+        """ Gives a dataframe with the data grouped in compression, decompression, and other """
         self.kernel_event_df['time_since_previous'] = self.kernel_event_df['start'] - self.kernel_event_df['end'].shift(1)
         self.kernel_event_df['group'] = self.kernel_event_df['time_since_previous'].gt(TIME_SPLITTER_NS).cumsum()
 
@@ -103,4 +110,30 @@ class NsysReader:
         return [compression, decompression]
         
         
+class NsysScanner:
+    
+    def __init__(self, dir) -> None:
+        self.dir = dir
         
+    def get_utilisation_df(self, compression_files, compressors, approx_number_of_threads) -> pd.DataFrame:
+        result_df = pd.DataFrame(columns=['standard', 'chunk_size', 'file', 'compression_utilization', 'decompression_utilization'])
+
+        for compression_file in compression_files:
+            for compressor in compressors:
+                for threads_num in approx_number_of_threads:
+                    input_file = self.dir + 'output_' + str(compressor) + '_' + str(compression_file) + '_' + str(threads_num) + 'threads.h5'
+                    chunk_size = FILE_SIZE/threads_num
+                    print(input_file)
+                    try:
+                        reader = NsysReader(input_file)
+                        compression_utilisation, decompression_utilisation = reader.get_compressions_utilizations()
+                    except Exception as e:
+                        print('Failed getting utilization of ' + str(compressor) + ' ' + str(compression_file) + ' ' + str(threads_num) + ' threads: ' +str(e))
+                        continue
+                    result_df.loc[len(result_df)] = {'standard': str(compressor), 
+                                                'chunk_size': int(chunk_size),
+                                                'file': str(compression_file),
+                                                'compression_utilization': float(decompression_utilisation), 
+                                                'decompression_utilization': float(compression_utilisation)}
+                
+        return result_df
