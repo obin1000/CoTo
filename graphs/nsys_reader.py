@@ -7,7 +7,6 @@ from tqdm import tqdm
 tqdm.pandas()
 
 TIME_SPLITTER_NS = 100_000
-FILE_SIZE = 8589934592
 
 COMPRESSION_KERNELS = ['snap_kernel', 'lz_compression_kernel', 'lz4CompressBatchKernel', 'compress_kernel', 'batch_encoder_kernel', 'cascaded_compression_kernel', 'lz_compress_longest_matches', 'lz_compress_greedy_hash', 'huffman_encode', 'gdeflate_encode']
 DECOMPRESSION_KERNELS = ['unsnap_kernel', 'decompression_kernel', 'lz4DecompressBatchKernel', 'decompress_kernel', 'batch_decoder_kernel', 'cascaded_decompression_kernel_type_check', 'inflate_kernel', 'gdeflateDecompress']
@@ -16,9 +15,28 @@ CATEGORY_COMPRESSION='compress'
 CATEGORY_DECOMPRESSION='decompress'
 CATEGORY_OTHER='other'
 
+def human_format(num):
+    magnitude = 0
+    while abs(num) >= 1024:
+        magnitude += 1
+        num /= 1024
+    return '{}{}B'.format('{}'.format(num).rstrip('0').rstrip('.'), ['', 'k', 'M', 'G', 'T'][magnitude])
+
+def fix_chunks(df, file_size):
+    """ 
+    chunk: number of chunks (approx number of threads), 
+    chunksize_Byte: number of bytes in chunk
+    """
+    df['chunksize_Bytes'] = file_size / df['chunks']
+    df['chunksize_Bytes_formatted'] = df['chunksize_Bytes'].apply(human_format)
+    df['chunks_formatted'] = df['chunks'].apply(human_format)
+    df['chunks_combined_formatted'] = df['chunks'].apply(lambda x : f"{human_format(x)} chunks of {human_format(file_size / x)}B")
+    return df
+
 class NsysReader:
-    def __init__(self, input_file_hdf) -> None:
+    def __init__(self, input_file_hdf, file_size) -> None:
         """ Read an nsys report (export) and convert it pandas dataframes """
+        self.file_size = file_size
         h5_file = h5py.File(input_file_hdf)
         self.gpu_metric_df = pd.DataFrame(np.array(h5_file[nsys.GPU_METRICS])).sort_values(by=['timestamp'])
         self.kernel_event_df = pd.DataFrame(np.array(h5_file[nsys.CUPTI_ACTIVITY_KIND_KERNEL])).sort_values(by=['start'])
@@ -30,7 +48,7 @@ class NsysReader:
         self.kernel_event_df['utilization'] = self.kernel_event_df.apply(lambda row: self.get_avg_utilization_of_span(row['start'], row['end']), axis=1)
         self.kernel_event_df['name'] = self.kernel_event_df['shortName'].apply(self.get_string)
 
-        self.kernel_event_df['chunk_size'] = (FILE_SIZE / self.kernel_event_df['gridX']).astype(int)
+        self.kernel_event_df['chunk_size'] = (self.file_size / self.kernel_event_df['gridX']).astype(int)
         self.kernel_event_df['duration'] = self.kernel_event_df['end'] - self.kernel_event_df['start']
         
     def get_string(self, id) -> str:
@@ -112,8 +130,9 @@ class NsysReader:
         
 class NsysScanner:
     
-    def __init__(self, dir) -> None:
+    def __init__(self, dir, file_size) -> None:
         self.dir = dir
+        self.file_size = file_size
         
     def get_utilisation_df(self, compression_files, compressors, approx_number_of_threads) -> pd.DataFrame:
         result_df = pd.DataFrame(columns=['standard', 'chunk_size', 'file', 'compression_utilization', 'decompression_utilization'])
@@ -122,10 +141,10 @@ class NsysScanner:
             for compressor in compressors:
                 for threads_num in approx_number_of_threads:
                     input_file = self.dir + 'output_' + str(compressor) + '_' + str(compression_file) + '_' + str(threads_num) + 'threads.h5'
-                    chunk_size = FILE_SIZE/threads_num
+                    chunk_size = self.file_size/threads_num
                     print(input_file)
                     try:
-                        reader = NsysReader(input_file)
+                        reader = NsysReader(input_file, self.file_size)
                         compression_utilisation, decompression_utilisation = reader.get_compressions_utilizations()
                     except Exception as e:
                         print('Failed getting utilization of ' + str(compressor) + ' ' + str(compression_file) + ' ' + str(threads_num) + ' threads: ' +str(e))
