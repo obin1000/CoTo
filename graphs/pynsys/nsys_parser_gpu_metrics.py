@@ -1,12 +1,9 @@
-
 import pandas as pd
-import numpy as np
-import h5py
-import nsys_constants as nsys
-from tqdm import tqdm
-tqdm.pandas()
 
-TIME_SPLITTER_NS = 100_000
+from .nsys_reader import NsysReader
+from . import nsys_constants as nsys_const
+
+TIME_SPLITTER_NS = 50_000
 
 COMPRESSION_KERNELS = ['snap_kernel', 'lz_compression_kernel', 'lz4CompressBatchKernel', 'compress_kernel', 'batch_encoder_kernel', 'cascaded_compression_kernel', 'lz_compress_longest_matches', 'lz_compress_greedy_hash', 'huffman_encode', 'gdeflate_encode']
 DECOMPRESSION_KERNELS = ['unsnap_kernel', 'decompression_kernel', 'lz4DecompressBatchKernel', 'decompress_kernel', 'batch_decoder_kernel', 'cascaded_decompression_kernel_type_check', 'inflate_kernel', 'gdeflateDecompress']
@@ -15,34 +12,17 @@ CATEGORY_COMPRESSION='compress'
 CATEGORY_DECOMPRESSION='decompress'
 CATEGORY_OTHER='other'
 
-def human_format(num):
-    magnitude = 0
-    while abs(num) >= 1024:
-        magnitude += 1
-        num /= 1024
-    return '{}{}B'.format('{}'.format(num).rstrip('0').rstrip('.'), ['', 'k', 'M', 'G', 'T'][magnitude])
 
-def fix_chunks(df, file_size):
-    """ 
-    chunk: number of chunks (approx number of threads), 
-    chunksize_Byte: number of bytes in chunk
-    """
-    df['chunksize_Bytes'] = file_size / df['chunks']
-    df['chunksize_Bytes_formatted'] = df['chunksize_Bytes'].apply(human_format)
-    df['chunks_formatted'] = df['chunks'].apply(human_format)
-    df['chunks_combined_formatted'] = df['chunks'].apply(lambda x : f"{human_format(x)} chunks of {human_format(file_size / x)}B")
-    return df
-
-class NsysReader:
-    def __init__(self, input_file_hdf, file_size) -> None:
-        """ Read an nsys report (export) and convert it pandas dataframes """
+class NsysParserGPUMetrics:
+    def __init__(self, nsys_reader: NsysReader, file_size) -> None:
         self.file_size = file_size
-        h5_file = h5py.File(input_file_hdf)
-        self.gpu_metric_df = pd.DataFrame(np.array(h5_file[nsys.GPU_METRICS])).sort_values(by=['timestamp'])
-        self.kernel_event_df = pd.DataFrame(np.array(h5_file[nsys.CUPTI_ACTIVITY_KIND_KERNEL])).sort_values(by=['start'])
-        self.strings_df = pd.DataFrame(np.array(h5_file[nsys.STRING_IDS]))
+        self.reader = nsys_reader
+        self.kernel_event_df = nsys_reader.get_kernel_events()
+        self.target_info_gpu_metrics_df = nsys_reader.get_target_info_gpu_metrics()
+        self.gpu_metric_df = nsys_reader.get_gpu_metrics()
+        self.strings_df = nsys_reader.get_string_ids()
         self.add_extra_info()
-        
+    
     def add_extra_info(self) -> None:
         """ Calculates the average utilization of each kernel """
         self.kernel_event_df['utilization'] = self.kernel_event_df.apply(lambda row: self.get_avg_utilization_of_span(row['start'], row['end']), axis=1)
@@ -54,15 +34,26 @@ class NsysReader:
     def get_string(self, id) -> str:
         """ Translate a string id to a string """
         return str(self.strings_df.loc[self.strings_df['id'] == id, 'value'].values[0], encoding='utf-8')
-
+    
+    def decode_bytes(byte_str):
+        return byte_str.decode('utf-8')
+    
+    def get_gpu_metric_id(self, name) -> int:
+        metric_ids = self.target_info_gpu_metrics_df[self.target_info_gpu_metrics_df['metricName'].apply(NsysParserGPUMetrics.decode_bytes).str.contains(name, case=False)]
+        if len(metric_ids) > 0:
+            return int(metric_ids['metricId'].values[0])
+        # print('Did not find metric id for ' + str(name))
+        return 17
+    
     def get_utilization_metrics_in_span(self, begin, end) -> pd.DataFrame:
         """ Gives a dataframe with GPU utilisation metrics between give timestamps (ns) """
-        compute_metrics = self.gpu_metric_df.loc[self.gpu_metric_df['metricId'] == nsys.METRIC_COMPUTE_WARPS]
+        utilisation_metric_id = self.get_gpu_metric_id(nsys_const.METRIC_COMPUTE_WARPS)
+        compute_metrics = self.gpu_metric_df.loc[self.gpu_metric_df['metricId'] == utilisation_metric_id]
         return compute_metrics[compute_metrics['timestamp'].between(begin, end, inclusive="both")]
     
     def get_unallocated_metrics_in_span(self, begin, end) -> pd.DataFrame:
         """ Gives a dataframe with unallocated warps metrics between give timestamps (ns) """
-        compute_metrics = self.gpu_metric_df.loc[self.gpu_metric_df['metricId'] == nsys.METRIC_UNALLOCATED_WARPS]
+        compute_metrics = self.gpu_metric_df.loc[self.gpu_metric_df['metricId'] == nsys_const.METRIC_UNALLOCATED_WARPS]
         return compute_metrics[compute_metrics['timestamp'].between(begin, end, inclusive="both")]
 
 
@@ -109,13 +100,13 @@ class NsysReader:
 
         # Apply the function to each group
         groups_durations = self.kernel_event_df.groupby('group')['duration'].sum().rename('duration').reset_index()
-        groups_categories = self.kernel_event_df.groupby('group').apply(NsysReader.categorize_group).rename('category')
-        groups_utilizations = self.kernel_event_df.groupby('group').apply(NsysReader.weighted_mean).rename('utilization')
+        groups_categories = self.kernel_event_df.groupby('group').apply(NsysParserGPUMetrics.categorize_group).rename('category')
+        groups_utilizations = self.kernel_event_df.groupby('group').apply(NsysParserGPUMetrics.weighted_mean).rename('utilization')
         groups_num_kernels = self.kernel_event_df.groupby('group').size().rename('num_kernels')
         
         return pd.concat([groups_categories, groups_durations, groups_utilizations, groups_num_kernels], axis=1)
     
-    def get_compressions_utilizations(self) -> tuple[float, float]:
+    def get_compressions_average_utilizations(self) -> tuple[float, float]:
         group_data = self.get_group_data()
         group_data_compress = group_data[group_data['category'] != CATEGORY_OTHER]
 
@@ -126,33 +117,19 @@ class NsysReader:
         decompression = group_data_compress['utilization'].loc[CATEGORY_DECOMPRESSION]
                 
         return [compression, decompression]
-        
-        
-class NsysScanner:
     
-    def __init__(self, dir, file_size) -> None:
-        self.dir = dir
-        self.file_size = file_size
-        
-    def get_utilisation_df(self, compression_files, compressors, approx_number_of_threads) -> pd.DataFrame:
-        result_df = pd.DataFrame(columns=['standard', 'chunk_size', 'file', 'compression_utilization', 'decompression_utilization'])
+    def get_compressions_average_durations(self) -> tuple[float, float]:
+        group_data = self.get_group_data()
+        group_data_compress = group_data[group_data['category'] != CATEGORY_OTHER]
 
-        for compression_file in compression_files:
-            for compressor in compressors:
-                for threads_num in approx_number_of_threads:
-                    input_file = self.dir + 'output_' + str(compressor) + '_' + str(compression_file) + '_' + str(threads_num) + 'threads.h5'
-                    chunk_size = self.file_size/threads_num
-                    print(input_file)
-                    try:
-                        reader = NsysReader(input_file, self.file_size)
-                        compression_utilisation, decompression_utilisation = reader.get_compressions_utilizations()
-                    except Exception as e:
-                        print('Failed getting utilization of ' + str(compressor) + ' ' + str(compression_file) + ' ' + str(threads_num) + ' threads: ' +str(e))
-                        continue
-                    result_df.loc[len(result_df)] = {'standard': str(compressor), 
-                                                'chunk_size': int(chunk_size),
-                                                'file': str(compression_file),
-                                                'compression_utilization': float(decompression_utilisation), 
-                                                'decompression_utilization': float(compression_utilisation)}
+        group_data_compress = group_data_compress.groupby('category').agg({'duration': 'mean',
+                                                                   'utilization': 'mean',})
+        
+        compression = group_data_compress['duration'].loc[CATEGORY_COMPRESSION]
+        decompression = group_data_compress['duration'].loc[CATEGORY_DECOMPRESSION]
                 
-        return result_df
+        return [compression, decompression]
+    
+    
+    
+    

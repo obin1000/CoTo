@@ -126,4 +126,6 @@ dmypy.json
 
 *.DS_Store
 
-data/compare/
+data/compare_gpu/
+data/compare_gpu_exact/
+data/compare_file_size/

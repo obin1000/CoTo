@@ -1,7 +1,6 @@
 
-CUPTI_ACTIVITY_KIND_MEMCPY="CUPTI_ACTIVITY_KIND_MEMCPY"
-CUPTI_ACTIVITY_KIND_MEMSET="CUPTI_ACTIVITY_KIND_MEMSET"
-CUPTI_ACTIVITY_KIND_KERNEL="CUPTI_ACTIVITY_KIND_KERNEL"
+TABLE_CUPTI_ACTIVITY_KIND_MEMCPY="CUPTI_ACTIVITY_KIND_MEMCPY"
+TABLE_CUPTI_ACTIVITY_KIND_KERNEL="CUPTI_ACTIVITY_KIND_KERNEL"
 # CUPTI_ACTIVITY_KIND_KERNEL (
 #      start                       INTEGER   NOT NULL,                    -- Event start timestamp (ns).
 #      end                         INTEGER   NOT NULL,                    -- Event end timestamp (ns).
@@ -31,12 +30,8 @@ CUPTI_ACTIVITY_KIND_KERNEL="CUPTI_ACTIVITY_KIND_KERNEL"
 #      graphNodeId                 INTEGER,                               -- REFERENCES CUDA_GRAPH_NODE_EVENTS(graphNodeId)
 #      sharedMemoryLimitConfig     INTEGER                                -- REFERENCES ENUM_CUDA_SHARED_MEM_LIMIT_CONFIG(id)
 #  );
-CUPTI_ACTIVITY_KIND_SYNCHRONIZATION="CUPTI_ACTIVITY_KIND_SYNCHRONIZATION"
-CUPTI_ACTIVITY_KIND_CUDA_EVENT="CUPTI_ACTIVITY_KIND_CUDA_EVENT"
-CUPTI_ACTIVITY_KIND_GRAPH_TRACE="CUPTI_ACTIVITY_KIND_GRAPH_TRACE"
-CUPTI_ACTIVITY_KIND_RUNTIME="CUPTI_ACTIVITY_KIND_RUNTIME"
-TARGET_INFO_GPU_METRICS="TARGET_INFO_GPU_METRICS"
-GPU_METRICS="GPU_METRICS"
+TABLE_TARGET_INFO_GPU_METRICS="TARGET_INFO_GPU_METRICS"
+TABLE_GPU_METRICS="GPU_METRICS"
 # GPU_METRICS (
 #      -- GPU Metrics, events and values.
 #      timestamp                   INTEGER,                               -- Event timestamp (ns).
@@ -45,7 +40,7 @@ GPU_METRICS="GPU_METRICS"
 #      value                       INTEGER   NOT NULL                     -- Counter data value
 #  );
 
-STRING_IDS="StringIds"
+TABLE_STRING_IDS="StringIds"
 # StringIds (
 #      -- Consolidation of repetitive string values.
 #      id                          INTEGER   NOT NULL   PRIMARY KEY,      -- ID reference value.
@@ -53,16 +48,86 @@ STRING_IDS="StringIds"
 #  );
 
 
-METRIC_ID_PCIE_TX=0
-METRIC_ID_PCIE_RX=1
-METRIC_GPC_CLOCK_FREQUENCY=9
-METRIC_SYS_CLOCK_FREQUENCY=10
-METRIC_GR_ACTIVE=11
-METRIC_SM_ACTIVE=12
-METRIC_SM_ISSUE=13
-METRIC_COMPUTE_WARPS=17
-METRIC_UNALLOCATED_WARPS=18
-METRIC_DRAM_READ=19
-METRIC_DRAM_WRITE=20
 
+METRIC_COMPUTE_WARPS="Compute Warps In Flight"
+METRIC_UNALLOCATED_WARPS="Unallocated Warps in Active SMs"
 
+# A100
+TARGET_INFO_GPU_METRICS_VALUES = {
+    "PCIe TX Throughput": 0,
+	"PCIe RX Throughput": 1,
+ 	"NVLink TX Responses User Data": 2,
+	"NVLink TX Responses Protocol Data": 3,
+	"NVLink TX Requests User Data": 4,
+	"NVLink TX Requests Protocol Data": 5,
+	"NVLink RX Responses User Data": 6,
+	"NVLink RX Responses Protocol Data": 7,
+ 	"NVLink RX Requests User Data": 8,
+	"GPC Clock Frequency": 9,
+	"SYS Clock Frequency": 10,
+	"GR Active": 11,
+	"SM Active": 12,
+	"SM Issue": 13,
+	"Tensor Active": 14,
+	"Vertex/Tess/Geometry Warps in Flight": 15,
+	"Pixel Warps in Flight": 16,
+	"Compute Warps in Flight": 17,
+	"Unallocated Warps in Active SMs": 18,
+	"DRAM Read Bandwidth": 19,
+	"DRAM Write Bandwidth": 20,
+	"NVLink RX Requests Protocol Data": 21, 
+}
+
+# RTX2080TI
+TARGET_INFO_GPU_METRICS_VALUES = {
+    "PCIe Write Requests to BAR1": 0,
+    "PCIe Read Requests to BAR1": 1,
+    "PCIe TX Throughput": 2,
+    "PCIe RX Throughput": 3,
+    "DRAM Write Throughput": 4,
+    "DRAM Read Throughput": 5,
+    "Unallocated Warps in Active SMs": 6,
+    "Compute Warps In Flight": 7,
+    "Pixel Warps In Flight": 8,
+    "GR Active": 9,
+    "Dispatch Started": 10,
+    "Draw Started": 11,
+    "GPC Clock Frequency": 12,
+    "SYS Clock Frequency": 13,
+    "Sync Compute In Flight": 14,
+    "Async Compute In Flight": 15,
+    "SM Active": 16,
+    "SM Issue": 17,
+    "Tensor Active / FP16 Active": 18,
+    "Vertex/Tess/Geometry Warps In Flight": 19,
+}
+
+# RTX3050TI
+TARGET_INFO_GPU_METRICS_VALUES = {
+    "GPC Clock Frequency [MHz]": 0,
+    "SYS Clock Frequency [MHz]": 1,
+    "GR Active [Throughput %]": 2,
+    "Sync Compute in Flight [Throughput %]": 3,
+    "Async Compute in Flight [Throughput %]": 4,
+    "SM Active [Throughput %]": 5,
+    "SM Issue [Throughput %]": 6,
+    "Tensor Active [Throughput %]": 7,
+    "Vertex/Tess/Geometry Warps in Flight [Throughput %]": 8,
+    "Vertex/Tess/Geometry Warps in Flight [Avg]": 9,
+    "Vertex/Tess/Geometry Warps in Flight [Avg Warps per Cycle]": 10,
+    "Pixel Warps in Flight [Throughput %]": 11,
+    "Pixel Warps in Flight [Avg]": 12,
+    "Pixel Warps in Flight [Avg Warps per Cycle]": 13,
+    "Compute Warps in Flight [Throughput %]": 14,
+    "Compute Warps in Flight [Avg]": 15,
+    "Compute Warps in Flight [Avg Warps per Cycle]": 16,
+    "Unallocated Warps in Active SMs [Throughput %]": 17,
+    "Unallocated Warps in Active SMs [Avg]": 18,
+    "Unallocated Warps in Active SMs [Avg Warps per Cycle]": 19,
+    "DRAM Read Bandwidth [Throughput %]": 20,
+    "DRAM Write Bandwidth [Throughput %]": 21,
+    "PCIe RX Throughput [Throughput %]": 22,
+    "PCIe TX Throughput [Throughput %]": 23,
+    "PCIe Read Requests to BAR1 [Requests]": 24,
+    "PCIe Write Requests to BAR1 [Requests]": 25,
+}
