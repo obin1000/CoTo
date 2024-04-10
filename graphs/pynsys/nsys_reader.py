@@ -9,6 +9,7 @@ class NsysReader:
     def __init__(self, input_file_hdf) -> None:
         """ Read an nsys report (export) and convert it pandas dataframes """
         self.h5_file = h5py.File(input_file_hdf)
+    
         
     def get_kernel_events(self) -> pd.DataFrame:
         return pd.DataFrame(np.array(self.h5_file[nsys.TABLE_CUPTI_ACTIVITY_KIND_KERNEL])).sort_values(by=['start'])
@@ -21,7 +22,6 @@ class NsysReader:
     
     def get_target_info_gpu_metrics(self) -> pd.DataFrame:
         return pd.DataFrame(np.array(self.h5_file[nsys.TABLE_TARGET_INFO_GPU_METRICS]))
-
-
-        
-        
+    
+    def get_memory_usage_events(self) -> pd.DataFrame:
+        return pd.DataFrame(np.array(self.h5_file[nsys.TABLE_CUDA_GPU_MEMORY_USAGE_EVENTS]))

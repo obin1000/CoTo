@@ -129,3 +129,9 @@ dmypy.json
 data/compare_gpu/
 data/compare_gpu_exact/
 data/compare_file_size/
+data/compare_gpu_1gb/
+data/compare_gpu_500mb/
+
+*.nsys-rep
+
+cpp/cmake-build-debug/

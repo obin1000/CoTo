@@ -31,6 +31,29 @@ TABLE_CUPTI_ACTIVITY_KIND_KERNEL="CUPTI_ACTIVITY_KIND_KERNEL"
 #      sharedMemoryLimitConfig     INTEGER                                -- REFERENCES ENUM_CUDA_SHARED_MEM_LIMIT_CONFIG(id)
 #  );
 TABLE_TARGET_INFO_GPU_METRICS="TARGET_INFO_GPU_METRICS"
+
+
+TABLE_CUDA_GPU_MEMORY_USAGE_EVENTS="CUDA_GPU_MEMORY_USAGE_EVENTS"
+#  CREATE TABLE CUDA_GPU_MEMORY_USAGE_EVENTS (
+#      start                       INTEGER   NOT NULL,                    -- Event start timestamp (ns).
+#      globalPid                   INTEGER   NOT NULL,                    -- Serialized GlobalId.
+#      deviceId                    INTEGER   NOT NULL,                    -- Device ID.
+#      contextId                   INTEGER   NOT NULL,                    -- Context ID.
+#      address                     INTEGER   NOT NULL,                    -- Virtual address of the allocation/deallocation.
+#      pc                          INTEGER   NOT NULL,                    -- Program counter of the allocation/deallocation.
+#      bytes                       INTEGER   NOT NULL,                    -- Number of bytes allocated/deallocated (B).
+#      memKind                     INTEGER   NOT NULL,                    -- REFERENCES ENUM_CUDA_MEM_KIND(id)
+#      memoryOperationType         INTEGER   NOT NULL,                    -- REFERENCES ENUM_CUDA_DEV_MEM_EVENT_OPER(id)
+#      name                        TEXT,                                  -- Variable name, if available.
+#      correlationId               INTEGER,                               -- REFERENCES CUPTI_ACTIVITY_KIND_RUNTIME(correlationId)
+#      localMemoryPoolAddress      INTEGER,                               -- Base address of the local memory pool used
+#      localMemoryPoolReleaseThreshold   INTEGER,                         -- Release threshold of the local memory pool used
+#      localMemoryPoolSize         INTEGER,                               -- Size of the local memory pool used
+#      localMemoryPoolUtilizedSize   INTEGER,                             -- Utilized size of the local memory pool used
+#      importedMemoryPoolAddress   INTEGER,                               -- Base address of the imported memory pool used
+#      importedMemoryPoolProcessId   INTEGER                              -- Process ID of the imported memory pool used
+#  );
+
 TABLE_GPU_METRICS="GPU_METRICS"
 # GPU_METRICS (
 #      -- GPU Metrics, events and values.
